@@ -1,0 +1,6 @@
+{
+  "name": "Royal Concepts",
+  "description": "Premier event production, structural rigging, pitch LED screens, lighting systems, pro sound, and custom stage boardwork.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
