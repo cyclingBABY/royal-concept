@@ -60,6 +60,7 @@ export interface EquipmentSpec {
   specs: string[];
   availableUnits: number;
   featured?: boolean;
+  imageUrl?: string;
 }
 
 export interface QuoteFormData {
@@ -116,4 +117,46 @@ export interface SiteSettings {
   bannerText: string;
   tagline: string;
   headline: string;
+  heroImageUrl?: string;
+  heroSubheadline?: string;
+  logoImageUrl?: string;
+  aboutImageUrl?: string;
+}
+
+export type PictureCategory = ServiceCategory | 'hero' | 'portfolio' | 'gallery' | 'general';
+
+export interface SitePicture {
+  id: string;
+  title: string;
+  url: string;
+  category: PictureCategory;
+  caption?: string;
+  tags?: string[];
+  uploadedAt: string;
+  width?: number;
+  height?: number;
+}
+
+export interface DatabaseStats {
+  totalInquiries: number;
+  totalProjects: number;
+  totalEquipment: number;
+  totalServices: number;
+  totalPictures: number;
+  storageSizeBytes: number;
+  lastBackupDate?: string;
+}
+
+export interface DatabaseBackup {
+  version: string;
+  exportedAt: string;
+  system: string;
+  data: {
+    inquiries: AdminInquiry[];
+    projects: PortfolioProjectAdmin[];
+    equipment: EquipmentItemAdmin[];
+    services: ServiceItem[];
+    pictures: SitePicture[];
+    settings: SiteSettings;
+  };
 }

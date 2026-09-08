@@ -166,12 +166,12 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             <span className="text-3xl font-black text-white tracking-tight">
               {totalInquiriesCount}
             </span>
-            <span className="text-xs font-mono text-emerald-400 font-bold">
-              New Leads
+            <span className={`text-xs font-mono font-bold ${totalInquiriesCount > 0 ? 'text-emerald-400' : 'text-neutral-400'}`}>
+              {totalInquiriesCount > 0 ? 'Real Clients' : '0 Inbound'}
             </span>
           </div>
           <p className="text-[11px] text-neutral-400 mt-2 flex items-center gap-1">
-            <span>Click to manage client desk</span>
+            <span>{totalInquiriesCount > 0 ? 'Click to manage client desk' : 'No clients accessed yet (0)'}</span>
             <ArrowUpRight className="w-3 h-3 text-[#2563EB]" />
           </p>
         </div>
@@ -247,12 +247,12 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             <span className="text-3xl font-black text-white tracking-tight">
               {pendingQuotesCount}
             </span>
-            <span className="text-xs font-mono text-amber-400 font-bold">
-              Pending
+            <span className={`text-xs font-mono font-bold ${pendingQuotesCount > 0 ? 'text-amber-400' : 'text-neutral-400'}`}>
+              {pendingQuotesCount > 0 ? 'Pending' : '0 Pending'}
             </span>
           </div>
           <p className="text-[11px] text-neutral-400 mt-2 flex items-center gap-1">
-            <span>Requires pricing & dispatch review</span>
+            <span>{pendingQuotesCount > 0 ? 'Requires pricing & dispatch review' : 'All incoming quotes up to date'}</span>
             <ArrowUpRight className="w-3 h-3 text-amber-400" />
           </p>
         </div>
@@ -379,13 +379,38 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 </tr>
               ))}
 
-              {recentInquiries.length === 0 && (
+              {inquiries.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 px-4 text-center">
+                    <div className="max-w-md mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-[#121316] border border-[#2E323B] flex items-center justify-center mx-auto text-[#2563EB]">
+                        <Users className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white">No Client Inquiries Yet (0 Real Clients)</h4>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          The admin panel is connected directly to live inquiries. When real visitors access the website and request a quote, submit a contact form, or chat with the voice assistant, their records appear here automatically.
+                        </p>
+                      </div>
+                      <div className="pt-2 flex items-center justify-center gap-3">
+                        <button
+                          onClick={onNewBooking}
+                          className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-[#2563EB]/25"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ Log First Client Lead</span>
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ) : recentInquiries.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-neutral-500 text-xs font-mono">
                     No inquiries found matching search criteria.
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>

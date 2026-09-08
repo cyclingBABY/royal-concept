@@ -9,6 +9,7 @@ import { Footer } from './components/Footer';
 import { QuoteModal } from './components/QuoteModal';
 import { ServicePage } from './components/ServicePage';
 import { AudioChatBot } from './components/AudioChatBot';
+import { FloatingWidgets } from './components/FloatingWidgets';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { AdminPanel } from './components/AdminPanel';
 import { isAdminAuthenticated, getSiteSettings } from './data/adminStore';
@@ -190,6 +191,7 @@ export default function App() {
         currentService={currentView !== 'home' ? currentView : null}
         isOpenExternal={isAudioBotOpen}
         onCloseExternal={() => setIsAudioBotOpen(false)}
+        hideTrigger={true}
       />
 
       {/* Admin Login Modal (code5) */}
@@ -229,25 +231,13 @@ export default function App() {
         />
       )}
 
-      {/* Floating Quick Action Button for WhatsApp */}
-      <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-2.5">
-        <a
-          href={`https://wa.me/256702615454?text=${encodeURIComponent(
-            currentView !== 'home' 
-              ? `Hello Royal Concepts, I would like to inquire about booking your ${currentView.replace('-', ' ')} equipment & services.`
-              : 'Hello Royal Concepts, I would like to inquire about event equipment hire.'
-          )}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#20b857] text-white shadow-2xl transition-all duration-300 hover:scale-105"
-          aria-label="Direct WhatsApp message"
-        >
-          <MessageSquare className="w-4 h-4 fill-white" />
-          <span className="text-xs font-bold font-mono tracking-wide hidden sm:inline">
-            WhatsApp 0702 615 454
-          </span>
-        </a>
-      </div>
+      {/* Persistent Floating Action Widgets: WhatsApp & Audio Chat Bot ("what boat") */}
+      <FloatingWidgets
+        onOpenChatBot={() => setIsAudioBotOpen(true)}
+        isChatBotOpen={isAudioBotOpen}
+        currentService={currentView !== 'home' ? currentView : null}
+        whatsappNumber={siteSettings.whatsappPhone || '256702615454'}
+      />
     </div>
   );
 }

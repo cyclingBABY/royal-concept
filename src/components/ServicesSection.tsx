@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   Wrench, 
@@ -14,6 +14,7 @@ import {
   Images
 } from 'lucide-react';
 import { SERVICES } from '../data/mockData';
+import { getServices } from '../data/adminStore';
 import { ServiceItem, ServiceCategory } from '../types';
 
 interface ServicesSectionProps {
@@ -25,8 +26,17 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   onSelectServiceForQuote,
   onNavigateToServicePage,
 }) => {
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(getServices());
   const [selectedServiceDetail, setSelectedServiceDetail] = useState<ServiceItem | null>(null);
   const [activeModalPhotoIndex, setActiveModalPhotoIndex] = useState<number>(0);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setServicesList(getServices());
+    };
+    window.addEventListener('royal_concepts_admin_event', handleUpdate);
+    return () => window.removeEventListener('royal_concepts_admin_event', handleUpdate);
+  }, []);
 
   const getServiceIcon = (iconName: string) => {
     switch (iconName) {
@@ -72,7 +82,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 
         {/* 5 Interactive Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICES.map((service, index) => {
+          {servicesList.map((service, index) => {
             const isSpanTwo = index === 0 || index === 4;
             return (
               <div

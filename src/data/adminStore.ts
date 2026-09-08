@@ -4,15 +4,21 @@ import {
   EquipmentItemAdmin, 
   PortfolioProjectAdmin, 
   SiteSettings, 
-  ServiceCategory 
+  ServiceCategory,
+  ServiceItem,
+  SitePicture,
+  DatabaseStats,
+  DatabaseBackup
 } from '../types';
-import { EQUIPMENT_INVENTORY, PORTFOLIO_PROJECTS } from './mockData';
+import { EQUIPMENT_INVENTORY, PORTFOLIO_PROJECTS, SERVICES } from './mockData';
 
 const AUTH_KEY = 'royal_concepts_admin_auth';
-const INQUIRIES_KEY = 'royal_concepts_admin_inquiries_v2';
+const INQUIRIES_KEY = 'royal_concepts_admin_real_clients_v3';
 const EQUIPMENT_KEY = 'royal_concepts_admin_equipment_v2';
 const PROJECTS_KEY = 'royal_concepts_admin_projects_v2';
 const SETTINGS_KEY = 'royal_concepts_admin_settings_v2';
+const SERVICES_KEY = 'royal_concepts_admin_services_v2';
+const PICTURES_KEY = 'royal_concepts_admin_pictures_v2';
 const ADMIN_PASSCODE = 'code5@royal';
 
 // Default Site Settings
@@ -29,485 +35,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   headline: 'Engineering Unforgettable Stage & Event Experiences',
 };
 
-// Seed 28 realistic inquiries (8 Pending, 6 Contacted, 8 Confirmed, 4 In Logistics, 2 Completed)
-const INITIAL_INQUIRIES: AdminInquiry[] = [
-  {
-    id: 'INQ-2026-028',
-    createdAt: '2026-09-07T08:00:00Z',
-    fullName: 'Isaac Mukasa',
-    phoneNumber: '0772 458 901',
-    email: 'events@houseofdeejays.ug',
-    eventDate: '2026-10-18',
-    venueLocation: 'Lugogo Cricket Oval, Kampala',
-    eventType: 'Concert / Festival',
-    estimatedAudience: '8,000 - 12,000',
-    selectedServices: ['lighting', 'trussing', 'led-screens', 'audio-sound'],
-    estimatedBudgetUGX: 42000000,
-    status: 'Pending',
-    notes: 'Requires 16x12m heavy box aluminum roof grid with motorized hoists, 48 moving heads, and 12x4m P3.9 daylight LED backdrop.',
-    internalAdminNotes: 'Initial quote drafted. Waiting to confirm stage height requirements.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-027',
-    createdAt: '2026-09-06T15:30:00Z',
-    fullName: 'Julian Nsubuga',
-    phoneNumber: '0702 615 454',
-    email: 'jnsubuga@stanbic.co.ug',
-    eventDate: '2026-09-28',
-    venueLocation: 'Kampala Serena Victoria Hall',
-    eventType: 'Corporate Gala',
-    estimatedAudience: '800 Delegates',
-    selectedServices: ['lighting', 'led-screens', 'stage-boardwork', 'audio-sound'],
-    estimatedBudgetUGX: 18500000,
-    status: 'Contacted',
-    notes: 'Curved P2.9 ultra-fine pitch video wall, CNC branded stage boardwork and presidential dais.',
-    internalAdminNotes: 'Spoke on phone. Sent customized technical rider PDF to procurement.',
-    source: 'Contact Form',
-  },
-  {
-    id: 'INQ-2026-026',
-    createdAt: '2026-09-06T11:15:00Z',
-    fullName: 'Hon. Catherine Atuhaire',
-    phoneNumber: '0701 882 310',
-    email: 'info@eactradeforum.org',
-    eventDate: '2026-11-04',
-    venueLocation: 'Speke Resort Munyonyo Plenary',
-    eventType: 'Summit / Plenary',
-    estimatedAudience: '2,500 Delegates',
-    selectedServices: ['trussing', 'stage-boardwork', 'led-screens', 'lighting'],
-    estimatedBudgetUGX: 29000000,
-    status: 'Pending',
-    notes: 'Multi-lingual translation audio booth integration, presidential dais riser with disabled ramp.',
-    internalAdminNotes: 'Follow up on Monday with the events committee.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-025',
-    createdAt: '2026-09-05T19:20:00Z',
-    fullName: 'Pastor Timothy Omondi',
-    phoneNumber: '0782 334 119',
-    email: 'worship@glorycitadel.org',
-    eventDate: '2026-10-02',
-    venueLocation: 'Kololo Ceremonial Grounds',
-    eventType: 'Mega Praise Rally',
-    estimatedAudience: '15,000+',
-    selectedServices: ['audio-sound', 'lighting', 'trussing', 'led-screens'],
-    estimatedBudgetUGX: 38000000,
-    status: 'Confirmed',
-    notes: '16-box dual 10-inch line array hangs, front fills, delay towers, 24 battery uplights, twin LED screens.',
-    internalAdminNotes: 'Deposit received. Site survey complete. Structural permit cleared with KCCA.',
-    source: 'WhatsApp Direct',
-  },
-  {
-    id: 'INQ-2026-024',
-    createdAt: '2026-09-05T14:40:00Z',
-    fullName: 'Sarah Namubiru',
-    phoneNumber: '0752 900 123',
-    email: 's.namubiru@unhcr.org',
-    eventDate: '2026-09-22',
-    venueLocation: 'Sheraton Kampala Hotel Victoria Lawn',
-    eventType: 'Diplomatic Reception',
-    estimatedAudience: '400 VIP Guests',
-    selectedServices: ['stage-boardwork', 'lighting', 'audio-sound'],
-    estimatedBudgetUGX: 14000000,
-    status: 'In Logistics',
-    notes: 'Low-profile acoustic speech reinforcement, warm architectural tree uplighting, modular wooden stage.',
-    internalAdminNotes: 'Staging carpentry underway. Acoustic line check scheduled for 14:00 Thursday.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-023',
-    createdAt: '2026-09-04T16:10:00Z',
-    fullName: 'Dr. Ronald Kasule',
-    phoneNumber: '0774 219 883',
-    email: 'rkasule@makerere.ac.ug',
-    eventDate: '2026-10-10',
-    venueLocation: 'Makerere Freedom Square',
-    eventType: 'Centenary Academic Forum',
-    estimatedAudience: '5,000 Attendees',
-    selectedServices: ['trussing', 'lighting', 'audio-sound', 'stage-boardwork'],
-    estimatedBudgetUGX: 22000000,
-    status: 'Pending',
-    notes: 'Covered ground support truss arch, academic processional catwalk, and speech delay audio.',
-    internalAdminNotes: 'Awaiting university council budget stamp.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-022',
-    createdAt: '2026-09-04T09:30:00Z',
-    fullName: 'Grace Kyomugisha',
-    phoneNumber: '0703 551 228',
-    email: 'gkyomu@mtn.co.ug',
-    eventDate: '2026-09-30',
-    venueLocation: 'Kampala Serena Katonga Hall',
-    eventType: 'Corporate Product Launch',
-    estimatedAudience: '350 VIPs',
-    selectedServices: ['led-screens', 'lighting', 'stage-boardwork'],
-    estimatedBudgetUGX: 16000000,
-    status: 'Contacted',
-    notes: '3D brand reveal mechanism, high-resolution P2.9 LED center split screen with motorized reveal.',
-    internalAdminNotes: 'Video resolution specs sent to client creative agency.',
-    source: 'Contact Form',
-  },
-  {
-    id: 'INQ-2026-021',
-    createdAt: '2026-09-03T17:45:00Z',
-    fullName: 'Denis Batte',
-    phoneNumber: '0788 120 449',
-    email: 'denis@swangzavenue.com',
-    eventDate: '2026-11-20',
-    venueLocation: 'Jinja Agricultural Showgrounds',
-    eventType: 'Regional Music Tour',
-    estimatedAudience: '10,000+',
-    selectedServices: ['lighting', 'trussing', 'led-screens', 'audio-sound', 'stage-boardwork'],
-    estimatedBudgetUGX: 45000000,
-    status: 'Pending',
-    notes: 'Heavy touring stage package, outdoor P3.9 LED screen, beam moving heads, dry ice low fog.',
-    internalAdminNotes: 'Drafting multi-city package discount quotation.',
-    source: 'WhatsApp Direct',
-  },
-  {
-    id: 'INQ-2026-020',
-    createdAt: '2026-09-03T11:00:00Z',
-    fullName: 'Brenda Ahimbisibwe',
-    phoneNumber: '0776 994 301',
-    email: 'brenda@kcca.go.ug',
-    eventDate: '2026-10-04',
-    venueLocation: 'City Hall Gardens, Kampala',
-    eventType: 'Civic Awards Ceremony',
-    estimatedAudience: '600 Guests',
-    selectedServices: ['lighting', 'stage-boardwork', 'audio-sound'],
-    estimatedBudgetUGX: 11500000,
-    status: 'Contacted',
-    notes: 'Elevated VIP dais with gold edge trims, broadcast lighting, and crisp wireless podium audio.',
-    internalAdminNotes: 'Site inspection done. Sent revised quotation.',
-    source: 'Admin Entry',
-  },
-  {
-    id: 'INQ-2026-019',
-    createdAt: '2026-09-02T13:20:00Z',
-    fullName: 'Robert Ssebaggala',
-    phoneNumber: '0702 331 990',
-    email: 'robert@experientialug.com',
-    eventDate: '2026-10-25',
-    venueLocation: 'Entebbe Botanical Gardens',
-    eventType: 'Outdoor Food & Wine Expo',
-    estimatedAudience: '3,000 Visitors',
-    selectedServices: ['trussing', 'lighting', 'audio-sound'],
-    estimatedBudgetUGX: 17500000,
-    status: 'Pending',
-    notes: 'Suspended canopy truss structures, bistro ambient festoon stringing, and acoustic stage for live acoustic trio.',
-    internalAdminNotes: 'Pending client site approval with Entebbe authorities.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-018',
-    createdAt: '2026-09-01T15:00:00Z',
-    fullName: 'Arthur Mugisha',
-    phoneNumber: '0754 112 887',
-    email: 'arthur@airtel.co.ug',
-    eventDate: '2026-10-15',
-    venueLocation: 'UMA Multipurpose Hall, Lugogo',
-    eventType: 'National Dealers Conference',
-    estimatedAudience: '1,500 Attendees',
-    selectedServices: ['led-screens', 'lighting', 'audio-sound', 'stage-boardwork'],
-    estimatedBudgetUGX: 26000000,
-    status: 'Confirmed',
-    notes: 'Ultra-wide 16x4m LED panoramic display, digital wireless audio for 8 panel speakers, and dynamic lighting.',
-    internalAdminNotes: 'Contract signed. Logistics lead assigned to lead rigging on Oct 14.',
-    source: 'Contact Form',
-  },
-  {
-    id: 'INQ-2026-017',
-    createdAt: '2026-08-31T10:15:00Z',
-    fullName: 'Claire Nabunya',
-    phoneNumber: '0782 770 123',
-    email: 'claire@fenonevents.com',
-    eventDate: '2026-09-19',
-    venueLocation: 'Jahazi Pier Munyonyo',
-    eventType: 'Lakeside Wedding Reception',
-    estimatedAudience: '700 Guests',
-    selectedServices: ['lighting', 'stage-boardwork', 'audio-sound'],
-    estimatedBudgetUGX: 13000000,
-    status: 'Confirmed',
-    notes: 'Curved wooden bridal stage with high-gloss acrylic finish, warm romantic chandeliers on aluminum goalposts.',
-    internalAdminNotes: 'Carpentry complete in workshop. Final gloss coating in progress.',
-    source: 'WhatsApp Direct',
-  },
-  {
-    id: 'INQ-2026-016',
-    createdAt: '2026-08-30T14:40:00Z',
-    fullName: 'Patricia Akello',
-    phoneNumber: '0779 334 009',
-    email: 'pakello@ubc.ug',
-    eventDate: '2026-10-09',
-    venueLocation: 'Kololo Independence Grounds',
-    eventType: 'National Independence Broadcast',
-    estimatedAudience: '20,000 Broadcast',
-    selectedServices: ['lighting', 'trussing', 'led-screens', 'audio-sound'],
-    estimatedBudgetUGX: 52000000,
-    status: 'In Logistics',
-    notes: 'Heavy box truss broadcast canopy, broadcast CRI 96+ white key-lights, redundant NovaStar video processor.',
-    internalAdminNotes: 'Joint technical briefing completed with state broadcasting engineers.',
-    source: 'Admin Entry',
-  },
-  {
-    id: 'INQ-2026-015',
-    createdAt: '2026-08-29T16:00:00Z',
-    fullName: 'Simon Peter Otim',
-    phoneNumber: '0704 661 229',
-    email: 'otim@spekeresort.com',
-    eventDate: '2026-09-25',
-    venueLocation: 'Munyonyo Commonwealth Speke Hall',
-    eventType: 'Hospitality Leaders Summit',
-    estimatedAudience: '500 Delegates',
-    selectedServices: ['lighting', 'led-screens', 'audio-sound'],
-    estimatedBudgetUGX: 14500000,
-    status: 'Contacted',
-    notes: 'Clean P2.9 presentation LED wall and digital podium mics with low-profile stage monitor.',
-    internalAdminNotes: 'Sent customized proposal to hospitality committee.',
-    source: 'Contact Form',
-  },
-  {
-    id: 'INQ-2026-014',
-    createdAt: '2026-08-28T09:00:00Z',
-    fullName: 'Moses Kibirige',
-    phoneNumber: '0771 883 440',
-    email: 'moses@totalenergies.ug',
-    eventDate: '2026-11-12',
-    venueLocation: 'Serena Kampala Ballroom',
-    eventType: 'Corporate Energy Gala',
-    estimatedAudience: '600 VIPs',
-    selectedServices: ['lighting', 'stage-boardwork', 'led-screens'],
-    estimatedBudgetUGX: 21000000,
-    status: 'Pending',
-    notes: 'Green-themed intelligent stage lighting, custom acrylic illuminated emblem, and seamless presentation screen.',
-    internalAdminNotes: 'Awaiting procurement tender evaluation.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-013',
-    createdAt: '2026-08-27T11:45:00Z',
-    fullName: 'Fiona Namatovu',
-    phoneNumber: '0701 445 778',
-    email: 'fiona@eastafricanbank.com',
-    eventDate: '2026-10-28',
-    venueLocation: 'Kampala Serena Hotel',
-    eventType: 'Annual Shareholders Meeting (AGM)',
-    estimatedAudience: '1,000 Shareholders',
-    selectedServices: ['audio-sound', 'led-screens', 'stage-boardwork', 'lighting'],
-    estimatedBudgetUGX: 24000000,
-    status: 'Pending',
-    notes: 'Dual audience question-and-answer microphones, twin 6x3m LED projection screens, and voting dais.',
-    internalAdminNotes: 'Sent AV quote with redundant microphone backup included.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-012',
-    createdAt: '2026-08-26T18:00:00Z',
-    fullName: 'Samuel Balaba',
-    phoneNumber: '0783 221 909',
-    email: 'samuel@visiongroup.co.ug',
-    eventDate: '2026-09-15',
-    venueLocation: 'Lugogo Hockey Grounds',
-    eventType: 'Brand Activation & Concert',
-    estimatedAudience: '6,000 Youth',
-    selectedServices: ['lighting', 'trussing', 'audio-sound', 'led-screens'],
-    estimatedBudgetUGX: 34000000,
-    status: 'Confirmed',
-    notes: 'Touring rock line array PA system, fast moving beam lighting, and high-impact bass subwoofer matrix.',
-    internalAdminNotes: 'Advance rigging crew starts on-site at 06:00 Sept 14.',
-    source: 'WhatsApp Direct',
-  },
-  {
-    id: 'INQ-2026-011',
-    createdAt: '2026-08-25T14:15:00Z',
-    fullName: 'Lydia Mwesigwa',
-    phoneNumber: '0751 908 334',
-    email: 'lydia@ugandatourism.org',
-    eventDate: '2026-10-14',
-    venueLocation: 'Murchison Falls National Park Gate',
-    eventType: 'Tourism Heritage Festival',
-    estimatedAudience: '2,000 Visitors',
-    selectedServices: ['lighting', 'stage-boardwork', 'audio-sound', 'trussing'],
-    estimatedBudgetUGX: 27000000,
-    status: 'Contacted',
-    notes: 'Self-sufficient mobile event stage with quiet diesel generator and rugged aluminum ground-support.',
-    internalAdminNotes: 'Logistics plan for upcountry transport finalized.',
-    source: 'Contact Form',
-  },
-  {
-    id: 'INQ-2026-010',
-    createdAt: '2026-08-24T12:00:00Z',
-    fullName: 'Kato Emmanuel',
-    phoneNumber: '0772 119 008',
-    email: 'kato@bobiwine.ug',
-    eventDate: '2026-11-28',
-    venueLocation: 'Busabala One Love Beach',
-    eventType: 'End of Year Reggae Carnival',
-    estimatedAudience: '18,000 Crowd',
-    selectedServices: ['audio-sound', 'trussing', 'lighting', 'led-screens'],
-    estimatedBudgetUGX: 48000000,
-    status: 'Pending',
-    notes: 'Giant beach concert mainstage with heavy wind ballasts, massive sub-bass arrays, and daylight screens.',
-    internalAdminNotes: 'Meeting with production team next Tuesday.',
-    source: 'WhatsApp Direct',
-  },
-  {
-    id: 'INQ-2026-009',
-    createdAt: '2026-08-23T15:30:00Z',
-    fullName: 'Angela Tumusiime',
-    phoneNumber: '0705 332 111',
-    email: 'angela@britishcouncil.ug',
-    eventDate: '2026-09-20',
-    venueLocation: 'National Theatre Auditorium, Kampala',
-    eventType: 'Creative Arts Exhibition & Showcase',
-    estimatedAudience: '600 Attendees',
-    selectedServices: ['lighting', 'audio-sound', 'stage-boardwork'],
-    estimatedBudgetUGX: 9500000,
-    status: 'Confirmed',
-    notes: 'Theatrical profile spotlights, ambient wireless uplighting, and custom artist plinths.',
-    internalAdminNotes: 'Lighting plot approved by theatre master technician.',
-    source: 'Admin Entry',
-  },
-  {
-    id: 'INQ-2026-008',
-    createdAt: '2026-08-22T10:00:00Z',
-    fullName: 'Patrick Byaruhanga',
-    phoneNumber: '0785 443 210',
-    email: 'patrick@dfcugroup.com',
-    eventDate: '2026-09-18',
-    venueLocation: 'Kampala Serena Katonga Hall',
-    eventType: 'SME Business Awards',
-    estimatedAudience: '400 VIP Guests',
-    selectedServices: ['stage-boardwork', 'led-screens', 'lighting'],
-    estimatedBudgetUGX: 13500000,
-    status: 'In Logistics',
-    notes: 'Custom 3D backlit boardwork, stage riser with black velvet skirting, and P2.9 crystal video wall.',
-    internalAdminNotes: 'Carpentry ready for delivery on Thursday morning.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-007',
-    createdAt: '2026-08-21T16:20:00Z',
-    fullName: 'Rebecca Nalule',
-    phoneNumber: '0753 881 229',
-    email: 'rebecca@rotarydistrict9213.org',
-    eventDate: '2026-10-22',
-    venueLocation: 'Speke Resort Munyonyo Victoria Ballroom',
-    eventType: 'Rotary International Fellowship Gala',
-    estimatedAudience: '850 Dignitaries',
-    selectedServices: ['lighting', 'audio-sound', 'stage-boardwork'],
-    estimatedBudgetUGX: 15500000,
-    status: 'Contacted',
-    notes: 'Pristine speech audio, warm gold uplighting around ballroom pillars, and custom presidential podium.',
-    internalAdminNotes: 'Sent quotation with Rotary emblem branding package.',
-    source: 'Contact Form',
-  },
-  {
-    id: 'INQ-2026-006',
-    createdAt: '2026-08-20T11:10:00Z',
-    fullName: 'David Kintu',
-    phoneNumber: '0773 661 550',
-    email: 'david@ugandabreweries.com',
-    eventDate: '2026-10-03',
-    venueLocation: 'Lugogo Tennis Club Grounds',
-    eventType: 'Craft Beer & Music Fest',
-    estimatedAudience: '3,500 Guests',
-    selectedServices: ['trussing', 'lighting', 'audio-sound'],
-    estimatedBudgetUGX: 23000000,
-    status: 'Confirmed',
-    notes: 'Circular festival stage with 360-degree beam illumination, suspended speaker clusters, and festoons.',
-    internalAdminNotes: 'Rigging plot approved by safety inspector.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-005',
-    createdAt: '2026-08-19T14:00:00Z',
-    fullName: 'Dr. Stella Nansubuga',
-    phoneNumber: '0702 778 991',
-    email: 'stella@ministryofhealth.go.ug',
-    eventDate: '2026-09-12',
-    venueLocation: 'Imperial Royale Hotel Primrose Hall',
-    eventType: 'National Health Policy Launch',
-    estimatedAudience: '350 Delegates',
-    selectedServices: ['audio-sound', 'led-screens', 'lighting'],
-    estimatedBudgetUGX: 12000000,
-    status: 'In Logistics',
-    notes: 'Medical document presentation screen, multi-zone speech microphones, and livestream camera audio feed.',
-    internalAdminNotes: 'AV technician and sound engineer confirmed for deployment.',
-    source: 'Admin Entry',
-  },
-  {
-    id: 'INQ-2026-004',
-    createdAt: '2026-08-18T09:30:00Z',
-    fullName: 'Joseph Walusimbi',
-    phoneNumber: '0781 559 004',
-    email: 'joseph@chameleonmusic.com',
-    eventDate: '2026-12-05',
-    venueLocation: 'Lugogo Cricket Oval',
-    eventType: 'Legendary 25-Year Live Concert',
-    estimatedAudience: '15,000+ Fans',
-    selectedServices: ['lighting', 'trussing', 'led-screens', 'audio-sound', 'stage-boardwork'],
-    estimatedBudgetUGX: 55000000,
-    status: 'Confirmed',
-    notes: 'Giant curved roof truss structure, 30-meter stage width, full pyrotechnics integration, 60 moving heads.',
-    internalAdminNotes: 'Major production contract secured. Advance design review meeting scheduled.',
-    source: 'WhatsApp Direct',
-  },
-  {
-    id: 'INQ-2026-003',
-    createdAt: '2026-08-17T17:00:00Z',
-    fullName: 'Evelyn Babirye',
-    phoneNumber: '0755 221 880',
-    email: 'evelyn@innovateuganda.org',
-    eventDate: '2026-10-16',
-    venueLocation: 'MoTIV Uganda, Industrial Area',
-    eventType: 'East Africa Tech Hackathon & Expo',
-    estimatedAudience: '800 Coders & Founders',
-    selectedServices: ['led-screens', 'lighting', 'audio-sound'],
-    estimatedBudgetUGX: 14000000,
-    status: 'Pending',
-    notes: 'Industrial loft aesthetic lighting, presentation LED walls for pitching teams, and energetic background PA.',
-    internalAdminNotes: 'Draft budget sent; client reviewing sponsor allocations.',
-    source: 'Quote Modal',
-  },
-  {
-    id: 'INQ-2026-002',
-    createdAt: '2026-08-15T10:00:00Z',
-    fullName: 'Hassan Muyanja',
-    phoneNumber: '0772 884 112',
-    email: 'hassan@toyota.ug',
-    eventDate: '2026-09-02',
-    venueLocation: 'Toyota Showroom Jinja Road',
-    eventType: 'Hybrid Vehicle Unveiling',
-    estimatedAudience: '250 VIP Buyers',
-    selectedServices: ['lighting', 'stage-boardwork', 'led-screens'],
-    estimatedBudgetUGX: 16500000,
-    status: 'Completed',
-    notes: 'High-CRI 96+ white key-lighting, custom gloss car riser plinth, and high-contrast dramatic reveal screen.',
-    internalAdminNotes: 'Show executed flawlessly. Client extended contract for next showroom opening in Gulu.',
-    source: 'Admin Entry',
-  },
-  {
-    id: 'INQ-2026-001',
-    createdAt: '2026-08-12T13:45:00Z',
-    fullName: 'Christine Nabatanzi',
-    phoneNumber: '0703 118 774',
-    email: 'christine@unfpa.org',
-    eventDate: '2026-08-28',
-    venueLocation: 'Speke Resort Munyonyo',
-    eventType: 'Pan-African Youth Dialogue',
-    estimatedAudience: '1,200 Delegates',
-    selectedServices: ['audio-sound', 'lighting', 'led-screens', 'stage-boardwork'],
-    estimatedBudgetUGX: 28000000,
-    status: 'Completed',
-    notes: 'International plenary staging, simultaneous translation booth audio, and dual LED screen feeds.',
-    internalAdminNotes: 'Invoice paid in full. Testimonial received from UN resident coordinator.',
-    source: 'Quote Modal',
-  },
-];
+// Initial inquiries collection: Real clients only. Starts at 0 until real visitors access & submit.
+const INITIAL_INQUIRIES: AdminInquiry[] = [];
 
 // Seed 6 projects with 5 active on-site
 const INITIAL_PROJECTS: PortfolioProjectAdmin[] = PORTFOLIO_PROJECTS.map((proj, idx) => ({
@@ -600,12 +129,18 @@ export function adminLogout(): void {
 export function getInquiries(): AdminInquiry[] {
   if (typeof window === 'undefined') return INITIAL_INQUIRIES;
   try {
+    // Clear legacy mock seed key if still lingering
+    if (localStorage.getItem('royal_concepts_admin_inquiries_v2')) {
+      localStorage.removeItem('royal_concepts_admin_inquiries_v2');
+    }
+
     const raw = localStorage.getItem(INQUIRIES_KEY);
     if (!raw) {
       localStorage.setItem(INQUIRIES_KEY, JSON.stringify(INITIAL_INQUIRIES));
       return INITIAL_INQUIRIES;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
     console.error('Failed to parse inquiries:', err);
     return INITIAL_INQUIRIES;
@@ -616,6 +151,10 @@ export function saveInquiries(inquiries: AdminInquiry[]): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(INQUIRIES_KEY, JSON.stringify(inquiries));
   notifyAdminListeners();
+}
+
+export function clearAllInquiries(): void {
+  saveInquiries([]);
 }
 
 export function addInquiry(
@@ -800,4 +339,424 @@ export function resetSiteSettings(): SiteSettings {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SITE_SETTINGS));
   notifyAdminListeners();
   return DEFAULT_SITE_SETTINGS;
+}
+
+// Unified helper for reactive live contact channels based on current Site Settings
+export function getLiveContactChannels() {
+  const settings = getSiteSettings();
+  const primary = settings.primaryPhone || '0772 615 454';
+  const whatsapp = settings.whatsappPhone || '0702 615 454';
+  const technical = settings.technicalPhone || '0702 838 474';
+
+  return {
+    phones: [
+      {
+        number: primary,
+        label: 'Direct Line / Production Desk',
+        isPrimary: true,
+        raw: primary.replace(/\s+/g, ''),
+      },
+      {
+        number: whatsapp,
+        label: 'WhatsApp Quick Dispatch',
+        raw: whatsapp.replace(/\s+/g, ''),
+      },
+      {
+        number: technical,
+        label: '24/7 Emergency Rigging Hotline',
+        raw: technical.replace(/\s+/g, ''),
+      },
+    ],
+    whatsappNumber: whatsapp,
+    email: settings.email || 'info@royalconcepts.events',
+    address: settings.location || 'Kampala, Uganda (Deployments across East Africa)',
+    businessHours: settings.businessHours || '24/7 Event Rigging & Emergency Production Support',
+    bannerEnabled: settings.bannerEnabled,
+    bannerText: settings.bannerText,
+  };
+}
+
+// Master publish function to broadcast & synchronize all live system state
+export function publishAllToSystem(): { success: boolean; timestamp: string } {
+  notifyAdminListeners();
+  return {
+    success: true,
+    timestamp: new Date().toLocaleTimeString('en-GB', { hour12: false }),
+  };
+}
+
+// ----------------- SERVICES MANAGEMENT -----------------
+export function getServices(): ServiceItem[] {
+  if (typeof window === 'undefined') return SERVICES;
+  try {
+    const raw = localStorage.getItem(SERVICES_KEY);
+    if (!raw) {
+      localStorage.setItem(SERVICES_KEY, JSON.stringify(SERVICES));
+      return SERVICES;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : SERVICES;
+  } catch (err) {
+    console.error('Failed to parse services from storage:', err);
+    return SERVICES;
+  }
+}
+
+export function getServiceById(id: ServiceCategory): ServiceItem | undefined {
+  const services = getServices();
+  return services.find(s => s.id === id);
+}
+
+export function saveServices(services: ServiceItem[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(SERVICES_KEY, JSON.stringify(services));
+  notifyAdminListeners();
+}
+
+export function updateService(updatedService: ServiceItem): void {
+  const services = getServices();
+  const index = services.findIndex(s => s.id === updatedService.id);
+  if (index !== -1) {
+    const nextServices = [...services];
+    nextServices[index] = updatedService;
+    saveServices(nextServices);
+  } else {
+    saveServices([...services, updatedService]);
+  }
+}
+
+export function resetServices(): ServiceItem[] {
+  if (typeof window === 'undefined') return SERVICES;
+  localStorage.setItem(SERVICES_KEY, JSON.stringify(SERVICES));
+  notifyAdminListeners();
+  return SERVICES;
+}
+
+export function addServiceGalleryImage(serviceId: ServiceCategory, imageUrl: string): void {
+  const services = getServices();
+  const target = services.find(s => s.id === serviceId);
+  if (!target) return;
+
+  const currentGallery = target.galleryImages || [];
+  if (!currentGallery.includes(imageUrl)) {
+    const updatedService: ServiceItem = {
+      ...target,
+      galleryImages: [imageUrl, ...currentGallery],
+    };
+    updateService(updatedService);
+  }
+}
+
+export function removeServiceGalleryImage(serviceId: ServiceCategory, imageUrl: string): void {
+  const services = getServices();
+  const target = services.find(s => s.id === serviceId);
+  if (!target) return;
+
+  const currentGallery = target.galleryImages || [];
+  const updatedService: ServiceItem = {
+    ...target,
+    galleryImages: currentGallery.filter(url => url !== imageUrl),
+  };
+  updateService(updatedService);
+}
+
+// ----------------- SITE PICTURES / MEDIA LIBRARY -----------------
+const INITIAL_SITE_PICTURES: SitePicture[] = [
+  // Hero
+  {
+    id: 'pic-hero-01',
+    title: 'Concert Stage Night Ambience',
+    url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
+    category: 'hero',
+    caption: 'Hero stage background with moving heads and trussing',
+    tags: ['Hero', 'Concert', 'Lighting'],
+    uploadedAt: '2026-09-01T10:00:00Z',
+  },
+  // Lighting
+  {
+    id: 'pic-light-01',
+    title: 'Avolites DMX Light Show',
+    url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80',
+    category: 'lighting',
+    caption: 'Dynamic beam sequences in motion',
+    tags: ['Moving Heads', 'Beams', 'Show'],
+    uploadedAt: '2026-09-02T11:00:00Z',
+  },
+  {
+    id: 'pic-light-02',
+    title: 'Warm Key Lighting and Wash',
+    url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
+    category: 'lighting',
+    caption: 'Broadcast-grade studio lighting and stage glow',
+    tags: ['Wash', 'Broadcast', 'Atmosphere'],
+    uploadedAt: '2026-09-02T11:30:00Z',
+  },
+  {
+    id: 'pic-light-03',
+    title: 'Concert Spotlight & Haze FX',
+    url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80',
+    category: 'lighting',
+    caption: 'Atmospheric low haze and beam cone effects',
+    tags: ['Haze', 'Concert', 'Beams'],
+    uploadedAt: '2026-09-02T12:00:00Z',
+  },
+  // Trussing
+  {
+    id: 'pic-truss-01',
+    title: 'F34 Aluminum Box Truss Arched Roof',
+    url: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1200&q=80',
+    category: 'trussing',
+    caption: 'Structural festival canopy and rigging towers',
+    tags: ['Truss', 'Rigging', 'Outdoor Roof'],
+    uploadedAt: '2026-09-03T09:00:00Z',
+  },
+  {
+    id: 'pic-truss-02',
+    title: 'Overhead Lighting Grid Rigging',
+    url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80',
+    category: 'trussing',
+    caption: 'Motorized chain hoists and box trussing',
+    tags: ['Grid', 'Hoists', 'F34'],
+    uploadedAt: '2026-09-03T09:45:00Z',
+  },
+  // LED Screens
+  {
+    id: 'pic-screen-01',
+    title: 'P3.91 Outdoor High-Bright LED Video Wall',
+    url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80',
+    category: 'led-screens',
+    caption: 'NovaStar 4K calibrated daylight visible display',
+    tags: ['LED', 'P3.9', 'Video Wall'],
+    uploadedAt: '2026-09-04T14:00:00Z',
+  },
+  {
+    id: 'pic-screen-02',
+    title: 'P2.9 Ultra-Fine Pitch Indoor Conference Screen',
+    url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
+    category: 'led-screens',
+    caption: 'Seamless corporate presentation backdrop',
+    tags: ['Indoor', 'P2.9', 'Corporate'],
+    uploadedAt: '2026-09-04T14:30:00Z',
+  },
+  // Sound
+  {
+    id: 'pic-sound-01',
+    title: 'Dual 10-Inch Concert Line Array System',
+    url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80',
+    category: 'audio-sound',
+    caption: 'High SPL acoustic line array flown configuration',
+    tags: ['Sound', 'Line Array', 'Concert'],
+    uploadedAt: '2026-09-05T08:00:00Z',
+  },
+  {
+    id: 'pic-sound-02',
+    title: 'Digital Mixing Console Midas M32 Live',
+    url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80',
+    category: 'audio-sound',
+    caption: '40-Channel digital sound board with stage box',
+    tags: ['Console', 'Midas', 'FOH'],
+    uploadedAt: '2026-09-05T08:45:00Z',
+  },
+  // Stage & Boardwork
+  {
+    id: 'pic-stage-01',
+    title: 'CNC Backlit Corporate Backdrop & Dais',
+    url: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80',
+    category: 'stage-boardwork',
+    caption: 'Custom 3D wooden carpentry with integrated LEDs',
+    tags: ['Backdrop', 'Stage Decks', 'CNC'],
+    uploadedAt: '2026-09-06T13:00:00Z',
+  },
+  {
+    id: 'pic-stage-02',
+    title: 'Modular Anti-Slip Hexagrip Stage Decks',
+    url: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80',
+    category: 'stage-boardwork',
+    caption: '750kg/m² load-tested concert and gala staging',
+    tags: ['Stage', 'Decks', 'Runway'],
+    uploadedAt: '2026-09-06T13:30:00Z',
+  },
+  // Portfolio Highlights
+  {
+    id: 'pic-port-01',
+    title: 'Speke Resort Munyonyo Plenary Build',
+    url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80',
+    category: 'portfolio',
+    caption: 'Full conference stage, LED wall and audio towers',
+    tags: ['Munyonyo', 'Plenary', 'Summit'],
+    uploadedAt: '2026-09-06T15:00:00Z',
+  },
+  {
+    id: 'pic-port-02',
+    title: 'Lugogo Cricket Oval Festival Mainstage',
+    url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80',
+    category: 'portfolio',
+    caption: 'Full 16x12m curved roof festival stage build',
+    tags: ['Lugogo', 'Festival', 'Mainstage'],
+    uploadedAt: '2026-09-06T15:30:00Z',
+  },
+];
+
+export function getAllPictures(): SitePicture[] {
+  if (typeof window === 'undefined') return INITIAL_SITE_PICTURES;
+  try {
+    const raw = localStorage.getItem(PICTURES_KEY);
+    if (!raw) {
+      localStorage.setItem(PICTURES_KEY, JSON.stringify(INITIAL_SITE_PICTURES));
+      return INITIAL_SITE_PICTURES;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_SITE_PICTURES;
+  } catch (err) {
+    console.error('Failed to parse pictures:', err);
+    return INITIAL_SITE_PICTURES;
+  }
+}
+
+export function savePictures(pictures: SitePicture[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(PICTURES_KEY, JSON.stringify(pictures));
+  notifyAdminListeners();
+}
+
+export function addPicture(data: Omit<SitePicture, 'id' | 'uploadedAt'>): SitePicture {
+  const current = getAllPictures();
+  const newId = `pic-${Date.now().toString().slice(-6)}`;
+  const newPicture: SitePicture = {
+    ...data,
+    id: newId,
+    uploadedAt: new Date().toISOString(),
+  };
+  savePictures([newPicture, ...current]);
+  return newPicture;
+}
+
+export function updatePicture(updatedPicture: SitePicture): void {
+  const current = getAllPictures();
+  const updated = current.map(p => (p.id === updatedPicture.id ? updatedPicture : p));
+  savePictures(updated);
+}
+
+export function deletePicture(id: string): void {
+  const current = getAllPictures();
+  const updated = current.filter(p => p.id !== id);
+  savePictures(updated);
+}
+
+export function resetPictures(): SitePicture[] {
+  if (typeof window === 'undefined') return INITIAL_SITE_PICTURES;
+  localStorage.setItem(PICTURES_KEY, JSON.stringify(INITIAL_SITE_PICTURES));
+  notifyAdminListeners();
+  return INITIAL_SITE_PICTURES;
+}
+
+// ----------------- ROYAL DB ENGINE (BACKUP, RESTORE & TELEMETRY) -----------------
+export function exportFullDatabaseJSON(): string {
+  const backup: DatabaseBackup = {
+    version: '2.0.0',
+    exportedAt: new Date().toISOString(),
+    system: 'Royal Concepts Unified Event Production Management DB',
+    data: {
+      inquiries: getInquiries(),
+      projects: getPortfolioProjects(),
+      equipment: getEquipmentInventory(),
+      services: getServices(),
+      pictures: getAllPictures(),
+      settings: getSiteSettings(),
+    },
+  };
+  return JSON.stringify(backup, null, 2);
+}
+
+export function importFullDatabaseJSON(rawJson: string): { 
+  success: boolean; 
+  message: string; 
+  recordCounts?: Record<string, number> 
+} {
+  try {
+    const parsed = JSON.parse(rawJson);
+    if (!parsed || typeof parsed !== 'object') {
+      return { success: false, message: 'Invalid JSON file structure.' };
+    }
+
+    const data = parsed.data || parsed;
+    let counts: Record<string, number> = {};
+
+    if (Array.isArray(data.inquiries)) {
+      saveInquiries(data.inquiries);
+      counts['Inquiries'] = data.inquiries.length;
+    }
+    if (Array.isArray(data.projects)) {
+      savePortfolioProjects(data.projects);
+      counts['Projects'] = data.projects.length;
+    }
+    if (Array.isArray(data.equipment)) {
+      saveEquipmentInventory(data.equipment);
+      counts['Equipment'] = data.equipment.length;
+    }
+    if (Array.isArray(data.services)) {
+      saveServices(data.services);
+      counts['Services'] = data.services.length;
+    }
+    if (Array.isArray(data.pictures)) {
+      savePictures(data.pictures);
+      counts['Pictures'] = data.pictures.length;
+    }
+    if (data.settings && typeof data.settings === 'object') {
+      saveSiteSettings(data.settings);
+      counts['Settings'] = 1;
+    }
+
+    notifyAdminListeners();
+    return {
+      success: true,
+      message: 'Database successfully imported and restored!',
+      recordCounts: counts,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `Failed to restore database: ${err?.message || 'Invalid format'}`,
+    };
+  }
+}
+
+export function getDatabaseStats(): DatabaseStats {
+  const inquiries = getInquiries();
+  const projects = getPortfolioProjects();
+  const equipment = getEquipmentInventory();
+  const services = getServices();
+  const pictures = getAllPictures();
+  const settings = getSiteSettings();
+
+  const fullData = JSON.stringify({
+    inquiries,
+    projects,
+    equipment,
+    services,
+    pictures,
+    settings,
+  });
+
+  const storageSizeBytes = new Blob([fullData]).size;
+
+  return {
+    totalInquiries: inquiries.length,
+    totalProjects: projects.length,
+    totalEquipment: equipment.length,
+    totalServices: services.length,
+    totalPictures: pictures.length,
+    storageSizeBytes,
+    lastBackupDate: new Date().toLocaleDateString('en-GB'),
+  };
+}
+
+export function resetFullDatabase(): void {
+  saveInquiries(INITIAL_INQUIRIES);
+  savePortfolioProjects(INITIAL_PROJECTS);
+  saveEquipmentInventory(INITIAL_EQUIPMENT);
+  resetServices();
+  resetPictures();
+  resetSiteSettings();
+  notifyAdminListeners();
 }

@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { ServiceItem, ServiceCategory, PortfolioProject } from '../types';
 import { SERVICES, PORTFOLIO_PROJECTS, EQUIPMENT_INVENTORY, COMPANY_CONTACT } from '../data/mockData';
+import { getServices } from '../data/adminStore';
 
 interface ServicePageProps {
   serviceId: ServiceCategory;
@@ -43,10 +44,20 @@ export const ServicePage: React.FC<ServicePageProps> = ({
   onNavigateService,
   onOpenQuoteModal,
 }) => {
-  const currentService = SERVICES.find(s => s.id === serviceId) || SERVICES[0];
-  const currentIndex = SERVICES.findIndex(s => s.id === currentService.id);
-  const prevService = SERVICES[(currentIndex - 1 + SERVICES.length) % SERVICES.length];
-  const nextService = SERVICES[(currentIndex + 1) % SERVICES.length];
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(getServices());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setServicesList(getServices());
+    };
+    window.addEventListener('royal_concepts_admin_event', handleUpdate);
+    return () => window.removeEventListener('royal_concepts_admin_event', handleUpdate);
+  }, []);
+
+  const currentService = servicesList.find(s => s.id === serviceId) || servicesList[0];
+  const currentIndex = servicesList.findIndex(s => s.id === currentService.id);
+  const prevService = servicesList[(currentIndex - 1 + servicesList.length) % servicesList.length];
+  const nextService = servicesList[(currentIndex + 1) % servicesList.length];
 
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
   const [inPageQuoteSubmitted, setInPageQuoteSubmitted] = useState(false);
@@ -161,7 +172,7 @@ export const ServicePage: React.FC<ServicePageProps> = ({
 
           {/* Quick Pillar Switcher Buttons */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 scrollbar-none">
-            {SERVICES.map(s => {
+            {servicesList.map(s => {
               const isActive = s.id === currentService.id;
               return (
                 <button

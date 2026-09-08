@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Calendar, Sparkles, ShieldCheck, Phone, CheckCircle2, Play } from 'lucide-react';
 import { COMPANY_CONTACT } from '../data/mockData';
+import { getSiteSettings } from '../data/adminStore';
 import { Logo } from './Logo';
 
 interface HeroProps {
@@ -8,12 +9,15 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
+  const settings = getSiteSettings();
+  const heroBg = settings.heroImageUrl || "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=2000&q=80";
+
   return (
     <section id="hero" className="relative min-h-[92vh] flex items-center pt-24 pb-16 overflow-hidden stage-grid">
       {/* Background visual overlay with stage lighting ambience */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=2000&q=80"
+          src={heroBg}
           alt="Concert Stage Lighting and Truss Rigging"
           className="w-full h-full object-cover object-center opacity-25 filter brightness-75 contrast-125"
         />

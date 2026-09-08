@@ -13,6 +13,7 @@ import {
   FileText
 } from 'lucide-react';
 import { SiteSettings } from '../../types';
+import { ImageInputWithPicker } from './ImageInputWithPicker';
 
 interface SettingsTabProps {
   settings: SiteSettings;
@@ -277,6 +278,46 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
                 onChange={e => setFormData({ ...formData, headline: e.target.value })}
                 placeholder="Engineering Unforgettable Stage & Event Experiences"
                 className="w-full bg-[#121316] border border-[#2E323B] focus:border-[#2563EB] rounded-xl px-3 py-2.5 text-white outline-none text-xs"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 5: Homepage Hero Background Picture & Brand Visuals */}
+        <div className="p-6 rounded-2xl bg-[#1A1C20] border border-[#2E323B] space-y-5 shadow-xl">
+          <div className="border-b border-[#2E323B] pb-3">
+            <span className="text-[10px] font-mono uppercase text-[#00F0FF] font-bold">
+              VISUAL ASSETS & HERO IMAGERY
+            </span>
+            <h2 className="text-base font-bold text-white mt-0.5">
+              Homepage Hero Background & Brand Pictures
+            </h2>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              Easily change the atmospheric concert lighting picture shown across the homepage hero banner, or upload a custom company logo emblem.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {/* Hero Background Image */}
+            <ImageInputWithPicker
+              label="Homepage Hero Background Picture"
+              value={formData.heroImageUrl || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=2000&q=80'}
+              onChange={url => setFormData({ ...formData, heroImageUrl: url })}
+              categoryContext="hero"
+              aspectRatio="banner"
+              helperText="The atmospheric concert stage background photo rendered behind the Royal Concepts headline on the home page."
+            />
+
+            {/* Custom Brand Logo / Emblem */}
+            <div className="pt-2 border-t border-[#2E323B]">
+              <ImageInputWithPicker
+                label="Custom Brand Logo / Emblem (Optional)"
+                value={formData.logoImageUrl || ''}
+                onChange={url => setFormData({ ...formData, logoImageUrl: url })}
+                categoryContext="general"
+                aspectRatio="square"
+                placeholder="Leave blank to use default SVG Royal Concepts crown logo..."
+                helperText="Upload a transparent PNG or SVG logo file from your device if you want to replace the default vector crown logo."
               />
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Upload, Check, Trash2 } from 'lucide-react';
 import { PortfolioProjectAdmin, PortfolioCategory } from '../../types';
+import { ImageInputWithPicker } from './ImageInputWithPicker';
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -229,52 +230,18 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </div>
           </div>
 
-          {/* Image URL & Preset Selection */}
-          <div className="space-y-2">
-            <label className="font-mono text-[10px] text-neutral-400 uppercase font-semibold">
-              Project Showcase Image URL
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
-                className="flex-1 bg-[#121316] border border-[#2E323B] rounded-xl px-3 py-2 text-white outline-none text-xs font-mono"
-              />
-            </div>
-            {/* Presets */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-              <span className="text-[10px] text-neutral-500 font-mono shrink-0">Presets:</span>
-              {PRESET_IMAGES.map(preset => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => setImageUrl(preset.url)}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] border whitespace-nowrap transition ${
-                    imageUrl === preset.url
-                      ? 'bg-[#2563EB] text-white border-[#2563EB]'
-                      : 'bg-[#121316] text-neutral-400 border-[#2E323B] hover:text-white'
-                  }`}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-            {/* Image Preview */}
-            {imageUrl && (
-              <div className="relative h-28 w-full rounded-xl overflow-hidden border border-[#2E323B]">
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2">
-                  <span className="text-[10px] text-neutral-300 font-mono">Image Preview</span>
-                </div>
-              </div>
-            )}
+          {/* Image URL, File Upload & Library Selection */}
+          <div className="pt-1">
+            <ImageInputWithPicker
+              label="Project Showcase Cover Picture"
+              value={imageUrl}
+              onChange={setImageUrl}
+              categoryContext="portfolio"
+              presets={PRESET_IMAGES}
+              aspectRatio="video"
+              helperText="Upload event photos directly from your device, choose from the site's media library, or paste an external image URL."
+              required
+            />
           </div>
 
           {/* Equipment Used Checkboxes */}
@@ -398,9 +365,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               type="button"
               onClick={() => handleSubmit(true)}
               className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-lg shadow-[#2563EB]/25 transition flex items-center gap-1.5"
+              title="Publish live to Royal Concepts public portfolio and service pages"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Publish Project</span>
+              <span>Save & Publish to System</span>
             </button>
           </div>
         </div>

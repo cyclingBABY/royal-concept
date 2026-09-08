@@ -11,7 +11,9 @@ import {
   Filter, 
   Mail,
   DollarSign,
-  Download
+  Download,
+  Users,
+  RotateCcw
 } from 'lucide-react';
 import { AdminInquiry, InquiryStatus, ServiceCategory } from '../../types';
 
@@ -20,6 +22,7 @@ interface InquiriesTabProps {
   onSelectInquiry: (inquiry: AdminInquiry) => void;
   onNewBooking: () => void;
   onDeleteInquiry: (id: string) => void;
+  onClearAllInquiries?: () => void;
 }
 
 export const InquiriesTab: React.FC<InquiriesTabProps> = ({
@@ -27,6 +30,7 @@ export const InquiriesTab: React.FC<InquiriesTabProps> = ({
   onSelectInquiry,
   onNewBooking,
   onDeleteInquiry,
+  onClearAllInquiries,
 }) => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | InquiryStatus>('All');
@@ -105,6 +109,21 @@ export const InquiriesTab: React.FC<InquiriesTabProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5">
+          {inquiries.length > 0 && onClearAllInquiries && (
+            <button
+              onClick={() => {
+                if (confirm('Are you sure you want to clear all client inquiries back to zero (0)? This will wipe test leads.')) {
+                  onClearAllInquiries();
+                }
+              }}
+              className="px-3 py-2 rounded-xl bg-[#1A1C20] hover:bg-red-950/30 text-neutral-400 hover:text-red-400 border border-[#2E323B] text-xs font-medium transition flex items-center gap-1.5"
+              title="Reset client inquiries to 0"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Clear to 0</span>
+            </button>
+          )}
+
           <button
             onClick={exportCSV}
             className="px-3.5 py-2 rounded-xl bg-[#1A1C20] hover:bg-[#252830] text-neutral-300 hover:text-white border border-[#2E323B] text-xs font-bold transition flex items-center gap-1.5"
@@ -276,13 +295,38 @@ export const InquiriesTab: React.FC<InquiriesTabProps> = ({
                 </tr>
               ))}
 
-              {filtered.length === 0 && (
+              {inquiries.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-16 px-4 text-center">
+                    <div className="max-w-md mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-[#121316] border border-[#2E323B] flex items-center justify-center mx-auto text-[#2563EB]">
+                        <Users className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white">No Client Inquiries Yet (0 Real Clients)</h4>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          No visitors have accessed or submitted quote requests yet. Once prospective clients fill out the website calculator, submit an inquiry form, or chat with the voice assistant, their full details and equipment requests will appear here.
+                        </p>
+                      </div>
+                      <div className="pt-2 flex items-center justify-center gap-3">
+                        <button
+                          onClick={onNewBooking}
+                          className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-[#2563EB]/25"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ Log First Client Lead</span>
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-neutral-500 text-xs font-mono">
                     No inquiries found matching criteria.
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>

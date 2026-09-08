@@ -78,3 +78,56 @@ pre::-webkit-scrollbar {
   background-image: radial-gradient(rgba(255, 46, 0, 0.12) 1px, transparent 1px);
   background-size: 24px 24px;
 }
+
+/* Floating Action Animation for WhatsApp & Chatbot Widgets */
+@keyframes floatingWidget {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes floatingWidgetGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulseGlowGreen {
+  0%, 100% {
+    box-shadow: 0 10px 25px -5px rgba(37, 211, 102, 0.4), 0 0 0 0 rgba(37, 211, 102, 0.4);
+  }
+  50% {
+    box-shadow: 0 14px 28px -5px rgba(37, 211, 102, 0.6), 0 0 0 8px rgba(37, 211, 102, 0);
+  }
+}
+
+@keyframes pulseGlowRed {
+  0%, 100% {
+    box-shadow: 0 10px 25px -5px rgba(255, 46, 0, 0.4), 0 0 0 0 rgba(255, 46, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 14px 28px -5px rgba(255, 46, 0, 0.6), 0 0 0 8px rgba(255, 46, 0, 0);
+  }
+}
+
+.animate-floating {
+  animation: floatingWidget 3.2s ease-in-out infinite;
+}
+
+.animate-floating-gentle {
+  animation: floatingWidgetGentle 3.8s ease-in-out 0.4s infinite;
+}
+
+.pulse-glow-whatsapp {
+  animation: pulseGlowGreen 2.8s infinite;
+}
+
+.pulse-glow-chatbot {
+  animation: pulseGlowRed 3.2s infinite;
+}

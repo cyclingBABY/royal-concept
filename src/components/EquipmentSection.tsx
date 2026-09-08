@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Search, Shield, ArrowUpRight, X, RotateCcw } from 'lucide-react';
-import { EQUIPMENT_INVENTORY } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { Search, Shield, ArrowUpRight, X, RotateCcw, Tag } from 'lucide-react';
+import { getEquipmentInventory } from '../data/adminStore';
+import { EquipmentItemAdmin } from '../types';
 
 interface EquipmentSectionProps {
   onSelectEquipmentForQuote: (eqName: string) => void;
@@ -9,8 +10,18 @@ interface EquipmentSectionProps {
 export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
   onSelectEquipmentForQuote,
 }) => {
+  const [equipmentList, setEquipmentList] = useState<EquipmentItemAdmin[]>(getEquipmentInventory());
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Subscribe to live admin store events so newly saved/published gear reflects immediately
+  useEffect(() => {
+    const handleUpdate = () => {
+      setEquipmentList(getEquipmentInventory());
+    };
+    window.addEventListener('royal_concepts_admin_event', handleUpdate);
+    return () => window.removeEventListener('royal_concepts_admin_event', handleUpdate);
+  }, []);
 
   const filterTabs = [
     { id: 'all', label: 'All Equipment' },
@@ -22,7 +33,7 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
   ];
 
   // Real-time filtering based on product name or category
-  const filteredItems = EQUIPMENT_INVENTORY.filter(item => {
+  const filteredItems = equipmentList.filter(item => {
     const matchesCat = filterCategory === 'all' || item.category === filterCategory;
     const query = searchQuery.trim().toLowerCase();
     
@@ -31,9 +42,10 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
     const categoryText = item.category.toLowerCase().replace(/-/g, ' ');
     const matchesName = item.name.toLowerCase().includes(query);
     const matchesCategory = item.category.toLowerCase().includes(query) || categoryText.includes(query);
-    const matchesModel = item.model.toLowerCase().includes(query);
-    const matchesDescription = item.description.toLowerCase().includes(query);
-    const matchesSpecs = item.specs?.some(spec => spec.toLowerCase().includes(query));
+    const matchesModel = item.model?.toLowerCase().includes(query) || false;
+    const matchesDescription = item.description?.toLowerCase().includes(query) || false;
+    const matchesSpecs = item.specs?.some(spec => spec.toLowerCase().includes(query)) ||
+      item.features?.some(f => f.toLowerCase().includes(query));
 
     return matchesCat && (matchesName || matchesCategory || matchesModel || matchesDescription || matchesSpecs);
   });
@@ -169,12 +181,12 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
                   </p>
 
                   <p className="text-xs text-neutral-400 mt-2.5 line-clamp-2 leading-relaxed">
-                    {item.description}
+                    {item.description || 'Professional concert and event production equipment, maintained to international touring standards.'}
                   </p>
 
                   {/* Hardware Specs Pills */}
                   <div className="mt-4 pt-3 border-t border-[#1C1C1C] space-y-1.5 text-[11px] text-neutral-300">
-                    {item.specs.map((spec, sIdx) => (
+                    {((item.specs && item.specs.length > 0) ? item.specs : (item.features && item.features.length > 0) ? item.features : ['Tour-grade certification', 'High-reliability performance']).slice(0, 3).map((spec, sIdx) => (
                       <div key={sIdx} className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#00F0FF]" />
                         <span className="truncate">{spec}</span>
@@ -183,14 +195,24 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
                   </div>
                 </div>
 
-                {/* Card Action */}
-                <div className="mt-5 pt-3 border-t border-[#1C1C1C] flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase">
-                    Rigging Ready
-                  </span>
+                {/* Card Action & Daily Rate */}
+                <div className="mt-5 pt-3 border-t border-[#1C1C1C] flex items-center justify-between gap-2">
+                  <div>
+                    {item.dailyRateUGX ? (
+                      <div className="text-[11px] font-mono text-neutral-300">
+                        <span className="text-neutral-500">From </span>
+                        <span className="font-bold text-[#FF2E00]">UGX {item.dailyRateUGX.toLocaleString()}</span>
+                        <span className="text-[9px] text-neutral-500">/day</span>
+                      </div>
+                    ) : (
+                      <span className="text-[10px] font-mono text-neutral-500 uppercase">
+                        Rigging Ready
+                      </span>
+                    )}
+                  </div>
                   <button
                     onClick={() => onSelectEquipmentForQuote(item.name)}
-                    className="px-3 py-1.5 rounded-lg bg-[#202020] hover:bg-[#FF2E00] text-neutral-200 hover:text-white text-xs font-bold transition-all flex items-center gap-1"
+                    className="px-3 py-1.5 rounded-lg bg-[#202020] hover:bg-[#FF2E00] text-neutral-200 hover:text-white text-xs font-bold transition-all flex items-center gap-1 shrink-0"
                   >
                     <span>Add to Quote</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />

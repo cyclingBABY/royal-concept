@@ -12,7 +12,9 @@ import {
   X, 
   ShieldCheck, 
   Tv, 
-  Sparkles 
+  Sparkles,
+  Database,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { 
@@ -21,10 +23,12 @@ import {
   getEquipmentInventory, 
   getPortfolioProjects, 
   getSiteSettings,
+  getServices,
   saveInquiries,
   addInquiry,
   updateInquiryStatus,
   deleteInquiry,
+  clearAllInquiries,
   savePortfolioProjects,
   addPortfolioProject,
   updatePortfolioProject,
@@ -41,7 +45,8 @@ import {
   InquiryStatus, 
   EquipmentItemAdmin, 
   PortfolioProjectAdmin, 
-  SiteSettings 
+  SiteSettings,
+  ServiceItem
 } from '../types';
 import { AdminHeader } from './admin/AdminHeader';
 import { DashboardTab } from './admin/DashboardTab';
@@ -49,6 +54,9 @@ import { ProjectsTab } from './admin/ProjectsTab';
 import { EquipmentTab } from './admin/EquipmentTab';
 import { InquiriesTab } from './admin/InquiriesTab';
 import { SettingsTab } from './admin/SettingsTab';
+import { ServicesTab } from './admin/ServicesTab';
+import { PicturesTab } from './admin/PicturesTab';
+import { DatabaseTab } from './admin/DatabaseTab';
 import { ProjectModal } from './admin/ProjectModal';
 import { InquiryModal } from './admin/InquiryModal';
 
@@ -57,7 +65,7 @@ interface AdminPanelProps {
   onNavigateHome: () => void;
 }
 
-type AdminTab = 'dashboard' | 'projects' | 'equipment' | 'inquiries' | 'settings';
+type AdminTab = 'dashboard' | 'services' | 'pictures' | 'database' | 'projects' | 'equipment' | 'inquiries' | 'settings';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({
   onClose,
@@ -70,6 +78,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([]);
   const [equipment, setEquipment] = useState<EquipmentItemAdmin[]>([]);
   const [projects, setProjects] = useState<PortfolioProjectAdmin[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>(getServices());
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(getSiteSettings());
 
   // Modals
@@ -94,6 +103,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setInquiries(getInquiries());
     setEquipment(getEquipmentInventory());
     setProjects(getPortfolioProjects());
+    setServices(getServices());
     setSiteSettings(getSiteSettings());
   };
 
@@ -231,12 +241,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     refreshAllData();
   };
 
+  const handleClearAllInquiries = () => {
+    clearAllInquiries();
+    refreshAllData();
+  };
+
   const pendingQuotesCount = inquiries.filter(i => i.status === 'Pending').length;
   const activeOnsiteCount = projects.filter(p => p.isOnSite).length;
 
   const getTabTitle = () => {
     switch (activeTab) {
       case 'dashboard': return 'Dashboard Overview';
+      case 'services': return 'Services & Production Pillars';
+      case 'pictures': return 'Site Media & Pictures Database';
+      case 'database': return 'RoyalDB Engine & Vercel Deployment';
       case 'projects': return 'Portfolio & Projects';
       case 'equipment': return 'Services & Equipment Inventory';
       case 'inquiries': return 'Quote Requests & Inquiries';
@@ -293,6 +311,60 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${activeTab === 'dashboard' ? 'bg-white/20 text-white' : 'bg-[#121316] text-neutral-500'}`}>
               Overview
+            </span>
+          </button>
+
+          {/* Services & Pillars Management */}
+          <button
+            onClick={() => { setActiveTab('services'); setSidebarOpen(false); }}
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'services'
+                ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/25'
+                : 'text-neutral-400 hover:text-white hover:bg-[#121316]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-[#FF2E00]" />
+              <span>Services & Pillars</span>
+            </div>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${activeTab === 'services' ? 'bg-white/20 text-white' : 'bg-[#121316] text-neutral-500'}`}>
+              5 Core
+            </span>
+          </button>
+
+          {/* Site Media & Pictures Database */}
+          <button
+            onClick={() => { setActiveTab('pictures'); setSidebarOpen(false); }}
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'pictures'
+                ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/25'
+                : 'text-neutral-400 hover:text-white hover:bg-[#121316]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <ImageIcon className="w-4 h-4 text-[#00F0FF]" />
+              <span>Pictures & Media</span>
+            </div>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${activeTab === 'pictures' ? 'bg-white/20 text-white' : 'bg-[#121316] text-neutral-500'}`}>
+              DB
+            </span>
+          </button>
+
+          {/* RoyalDB & Vercel Deployment */}
+          <button
+            onClick={() => { setActiveTab('database'); setSidebarOpen(false); }}
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'database'
+                ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/25'
+                : 'text-neutral-400 hover:text-white hover:bg-[#121316]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Database className="w-4 h-4 text-[#FFE600]" />
+              <span>RoyalDB & Vercel</span>
+            </div>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${activeTab === 'database' ? 'bg-white/20 text-white' : 'bg-[#121316] text-neutral-500'}`}>
+              Deploy
             </span>
           </button>
 
@@ -447,6 +519,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             />
           )}
 
+          {activeTab === 'services' && (
+            <ServicesTab
+              services={services}
+              onRefresh={refreshAllData}
+            />
+          )}
+
+          {activeTab === 'pictures' && (
+            <PicturesTab
+              onRefresh={refreshAllData}
+            />
+          )}
+
+          {activeTab === 'database' && (
+            <DatabaseTab
+              onRefresh={refreshAllData}
+            />
+          )}
+
           {activeTab === 'projects' && (
             <ProjectsTab
               projects={projects}
@@ -472,6 +563,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               onSelectInquiry={item => setSelectedInquiry(item)}
               onNewBooking={() => setIsManualBookingOpen(true)}
               onDeleteInquiry={handleDeleteInquiry}
+              onClearAllInquiries={handleClearAllInquiries}
             />
           )}
 

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Phone, Menu, X, ArrowRight, ChevronDown, Sparkles, Wrench, Tv, Volume2, Layers } from 'lucide-react';
 import { Logo } from './Logo';
 import { COMPANY_CONTACT, SERVICES } from '../data/mockData';
-import { ServiceCategory } from '../types';
+import { getServices } from '../data/adminStore';
+import { ServiceCategory, ServiceItem } from '../types';
 
 interface NavbarProps {
   onOpenQuote: () => void;
@@ -17,10 +18,19 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateHome,
   onNavigateService,
 }) => {
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(getServices());
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [phonesDropdownOpen, setPhonesDropdownOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setServicesList(getServices());
+    };
+    window.addEventListener('royal_concepts_admin_event', handleUpdate);
+    return () => window.removeEventListener('royal_concepts_admin_event', handleUpdate);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -121,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span className="text-[#FF2E00]">5 Disciplines</span>
                   </div>
 
-                  {SERVICES.map((s) => (
+                  {servicesList.map((s) => (
                     <button
                       key={s.id}
                       onClick={() => {
@@ -290,7 +300,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 Services (Dedicated Pages)
               </div>
               <div className="grid grid-cols-1 gap-1 pt-1">
-                {SERVICES.map((s) => (
+                {servicesList.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => {

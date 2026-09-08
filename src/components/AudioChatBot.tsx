@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { COMPANY_CONTACT } from '../data/mockData';
 import { ServiceCategory } from '../types';
+import { addInquiry } from '../data/adminStore';
 
 export interface ChatMessage {
   id: string;
@@ -30,6 +31,7 @@ interface AudioChatBotProps {
   isOpenExternal?: boolean;
   onCloseExternal?: () => void;
   dispatchedToWhatsApp?: boolean;
+  hideTrigger?: boolean;
 }
 
 export const AudioChatBot: React.FC<AudioChatBotProps> = ({
@@ -37,6 +39,7 @@ export const AudioChatBot: React.FC<AudioChatBotProps> = ({
   isOpenExternal,
   onCloseExternal,
   dispatchedToWhatsApp = false,
+  hideTrigger = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputQuery, setInputQuery] = useState('');
@@ -247,6 +250,35 @@ export const AudioChatBot: React.FC<AudioChatBotProps> = ({
       setMessages(prev => [...prev.filter(m => m.id !== interimMsg.id), summaryMsg]);
       setSummaryForwarded(true);
 
+      // Log real client inquiry into Admin Store
+      try {
+        const chatContent = messages.map(m => m.text).join(' ');
+        const detectedServices: ServiceCategory[] = [];
+        const lower = chatContent.toLowerCase();
+        if (lower.includes('light') || lower.includes('beam')) detectedServices.push('lighting');
+        if (lower.includes('truss') || lower.includes('rig') || lower.includes('roof')) detectedServices.push('trussing');
+        if (lower.includes('screen') || lower.includes('led') || lower.includes('wall')) detectedServices.push('led-screens');
+        if (lower.includes('sound') || lower.includes('audio') || lower.includes('speaker')) detectedServices.push('audio-sound');
+        if (lower.includes('stage') || lower.includes('boardwork') || lower.includes('podium')) detectedServices.push('stage-boardwork');
+
+        addInquiry({
+          fullName: 'Voice Assistant Visitor',
+          phoneNumber: 'WhatsApp Direct (+256 702 615 454)',
+          email: '',
+          eventDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+          venueLocation: 'Kampala, Uganda',
+          eventType: 'Staging & Event Consultation',
+          estimatedAudience: 'To be confirmed',
+          selectedServices: detectedServices.length > 0 ? detectedServices : ['lighting', 'trussing', 'led-screens', 'audio-sound'],
+          estimatedBudgetUGX: 12000000,
+          notes: summaryText.substring(0, 500),
+          internalAdminNotes: 'Lead generated via Audio Voice Assistant chat forward.',
+          source: 'Audio Bot',
+        });
+      } catch (logErr) {
+        console.warn('Failed to log voice inquiry to admin store:', logErr);
+      }
+
       // Speak confirmation out loud
       if (isVoiceEnabled) {
         speakText(spokenRecap, summaryMsg.id);
@@ -414,13 +446,13 @@ _Forwarded from Royal Concepts Voice Assistant to WhatsApp Desk (+256 702 615 45
 
   return (
     <>
-      {/* Floating Audio Assistant Trigger Launcher */}
-      {!isOpen && (
+      {/* Floating Audio Assistant Trigger Launcher (if not hidden by unified floating dock) */}
+      {!hideTrigger && !isOpen && (
         <div className="fixed bottom-20 sm:bottom-6 left-3 sm:left-5 z-40 flex items-center gap-2">
           <button
             id="audio-bot-trigger"
             onClick={() => setIsOpen(true)}
-            className="group relative flex items-center gap-2.5 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-full bg-[#181818] border border-[#FF2E00]/60 hover:border-[#FF2E00] text-white shadow-2xl shadow-black/80 transition-all duration-300 hover:scale-105 hover:bg-[#202020]"
+            className="group relative flex items-center gap-2.5 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-full bg-[#181818] border border-[#FF2E00]/60 hover:border-[#FF2E00] text-white shadow-2xl shadow-black/80 transition-all duration-300 hover:scale-105 hover:bg-[#202020] animate-floating-gentle"
             aria-label="Open Audio Voice Assistant"
           >
             <span className="absolute -inset-0.5 rounded-full bg-[#FF2E00] opacity-30 group-hover:opacity-60 blur-sm transition animate-pulse" />
@@ -451,10 +483,10 @@ _Forwarded from Royal Concepts Voice Assistant to WhatsApp Desk (+256 702 615 45
         </div>
       )}
 
-      {/* Main Interactive Audio Chat Window - Zero Scrollbars on Phone Screens */}
+      {/* Main Interactive Audio Chat Window - Floats cleanly anchored on bottom-right above trigger */}
       {isOpen && (
         <div 
-          className="fixed bottom-2 sm:bottom-6 left-2 sm:left-6 right-2 sm:right-auto z-50 w-auto sm:w-[430px] max-h-[92vh] sm:max-h-[600px] h-[550px] sm:h-[600px] bg-[#121212] border border-[#2D2D2D] rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in no-scrollbar"
+          className="fixed bottom-2 sm:bottom-6 right-2 sm:right-6 left-2 sm:left-auto z-50 w-auto sm:w-[440px] max-h-[92vh] sm:max-h-[620px] h-[550px] sm:h-[620px] bg-[#121212] border border-[#2D2D2D] rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in no-scrollbar"
           style={{ overscrollBehavior: 'contain' }}
         >
           {/* Header Bar */}
